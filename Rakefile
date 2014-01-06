@@ -17,7 +17,6 @@ require 'vcloud-rest/version'
 Jeweler::Tasks.new do |s|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   s.name = %q{vcloud-rest}
-  s.version = VCloudClient::VERSION
   s.authors = ["Stefano Tortarolo", "Gareth Jones"]
   s.email = ['stefano.tortarolo@gmail.com', 'garethmichaeljones@gmail.com']
   s.summary = %q{Unofficial ruby bindings for VMWare vCloud's API}
@@ -27,7 +26,7 @@ Jeweler::Tasks.new do |s|
 
   s.require_path = 'lib'
   s.files = ["CHANGELOG.md","README.md", "LICENSE"] + Dir.glob("lib/**/*")
-  # dependencies defined in Gemfile
+  # Dependencies are defined in Gemfile
 end
 
 require 'rake/testtask'
