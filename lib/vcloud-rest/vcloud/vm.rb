@@ -29,6 +29,54 @@ module VCloudClient
     end
 
     ##
+    # Get metadata for the VM specified by 'vmid'.
+    #
+    def get_vm_metadata(vmid)
+      params = {
+          'method' => :get,
+          'command' => "/vApp/vm-#{vmid}/metadata"
+      }
+      response, headers = send_request(params)
+
+      tags = {}
+      response.css("MetadataEntry").each do |tag|
+        key = tag.css("Key").first
+        key = key.text unless key.nil?
+        val = tag.css("TypedValue Value").first
+        val = val.text unless val.nil?
+        tags[key] = val
+      end
+      tags
+    end
+
+    ##
+    # Add a metadata tag to the VM specified by 'vmid'.
+    #
+    #  - Currently will only add tags as String type.
+    #
+    def set_vm_metadata(vmid, key, value)
+      params = {
+          'method' => :put,
+          'command' => "/vApp/vm-#{vmid}/metadata/#{URI.escape(key)}"
+      }
+
+      builder = Nokogiri::XML::Builder.new do |xml|
+        xml.MetadataValue(
+            "xmlns" => "http://www.vmware.com/vcloud/v1.5",
+            "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance") {
+          xml.TypedValue("xsi:type" => "MetadataStringValue") {
+            xml.Value value
+          }
+        }
+      end
+
+      response, headers = send_request(params, builder.to_xml, "application/vnd.vmware.vcloud.metadata.value+xml")
+
+      task_id = headers[:location].gsub(/.*\/task\//, "")
+      task_id
+    end
+
+    ##
     # Retrieve information about Disks
     def get_vm_disk_info(vmid)
       response, headers = __get_disk_info(vmid)
