@@ -19,8 +19,10 @@
 require 'rest-client'
 require 'nokogiri'
 require 'httpclient'
-require 'ruby-progressbar'
+require 'ipaddr'
 require 'logger'
+require 'psych'
+require 'ruby-progressbar'
 
 require 'vcloud-rest/vcloud/vapp'
 require 'vcloud-rest/vcloud/org'
@@ -29,6 +31,7 @@ require 'vcloud-rest/vcloud/vdc'
 require 'vcloud-rest/vcloud/vm'
 require 'vcloud-rest/vcloud/ovf'
 require 'vcloud-rest/vcloud/network'
+require 'vcloud-rest/vcloud/edgegateway'
 
 module VCloudClient
   class UnauthorizedAccess < StandardError; end
