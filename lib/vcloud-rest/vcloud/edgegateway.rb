@@ -44,9 +44,8 @@ module VCloudClient
         :interfaces => interfaces,  :firewall => firewall, :nat => nat,
         :load_balancer => load_balancer }
 
-      # TODO: Make file dump optional and allow file to be specified.
-      File.open('/tmp/gateway.yml', 'w') { |file| file.write(Psych.dump(gateway, :indentation => 3)) }
-      return gateway
+      # File.open('/tmp/gateway.yml', 'w') { |file| file.write(Psych.dump(gateway, :indentation => 3)) }
+      gateway
     end
 
     ##
@@ -54,26 +53,21 @@ module VCloudClient
     #
     #
     def update_virtual_server_pool_members(gateway_id, pool_name, new_members=[])
-      #
       # First retrieve the Edge Gateway configuration.
-      #
       params = {
           'method' => :get,
           'command' => "/admin/edgeGateway/#{gateway_id}"
       }
-
       response, headers = send_request(params)
       pool = response.at("Pool:contains('#{pool_name}')")
       raise ArgumentError.new("Did not find Pool '#{pool_name}' on Gateway ID: '#{gateway_id}'") if pool.nil?
 
-      #
       # Then make the necessary modifications. In this case simply patch the XML with the IPs of the new servers.
-      #
       pool.css('Member IpAddress').each_with_index do |ip, index|
         ip.content = new_members[index]
       end
 
-      # TODO: Figure out the 'correct' way to extract the <EdgeGatewayServiceConfiguration /> from the main document
+      # TODO: Figure out the 'correct' way to extract a <EdgeGatewayServiceConfiguration /> document from the main document
       #
       # We cannot simply POST back the <EdgeGatewayServiceConfiguration /> that we extracted from the 'response' with
       # the required changes because that XML fragment is missing the necessary namespace declaration. We add that here:
@@ -81,9 +75,6 @@ module VCloudClient
       post_doc = Nokogiri::XML::Document.parse(response.at('EdgeGatewayServiceConfiguration').to_s)
       post_doc.root.add_namespace(nil, 'http://www.vmware.com/vcloud/v1.5')
 
-      #
-      # Now POST back the modified <EdgeGatewayServiceConfiguration /> section...
-      #
       post_params = {
           "method" => :post,
           "command" => "/admin/edgeGateway/#{gateway_id}/action/configureServices"
@@ -91,11 +82,9 @@ module VCloudClient
       post_response, post_headers = send_request(post_params, post_doc.to_xml,
                                                  'application/vnd.vmware.admin.edgeGatewayServiceConfiguration+xml')
 
-      #
-      # And return the task ID.
-      #
       task = post_response.css("Task").first
       task_id = task["href"].gsub(/.*\/task\//, "")
+      task_id
     end
 
     private
