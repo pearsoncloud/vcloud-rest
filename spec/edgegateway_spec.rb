@@ -77,13 +77,13 @@ describe VCloudClient::Connection do
         <Network type=\"application/vnd.vmware.admin.network+xml\" name=\"External\" href=\"https://testhost.local/api/admin/network/238676ef-b5db-437d-af2b-2f9e6736aebf\" /> 
         <InterfaceType>uplink</InterfaceType> 
         <SubnetParticipation> 
-          <Gateway>159.182.33.1</Gateway> 
+          <Gateway>192.168.33.1</Gateway>
           <Netmask>255.255.255.0</Netmask> 
-          <IpAddress>159.182.33.201</IpAddress> 
+          <IpAddress>192.168.33.201</IpAddress>
           <IpRanges> 
             <IpRange> 
-              <StartAddress>159.182.33.10</StartAddress> 
-              <EndAddress>159.182.33.15</EndAddress> 
+              <StartAddress>192.168.33.10</StartAddress>
+              <EndAddress>192.168.15</EndAddress>
             </IpRange> 
           </IpRanges> 
         </SubnetParticipation> 
@@ -229,7 +229,7 @@ describe VCloudClient::Connection do
           </Protocols> 
           <Port>443</Port> 
           <DestinationPortRange>443</DestinationPortRange> 
-          <DestinationIp>159.182.33.11</DestinationIp> 
+          <DestinationIp>192.168.33.11</DestinationIp>
           <SourcePort>-1</SourcePort> 
           <SourcePortRange>Any</SourcePortRange> 
           <SourceIp>external</SourceIp> 
@@ -246,7 +246,7 @@ describe VCloudClient::Connection do
           </Protocols> 
           <Port>443</Port> 
           <DestinationPortRange>443</DestinationPortRange> 
-          <DestinationIp>159.182.33.12</DestinationIp> 
+          <DestinationIp>192.168.33.12</DestinationIp>
           <SourcePort>-1</SourcePort> 
           <SourcePortRange>Any</SourcePortRange> 
           <SourceIp>external</SourceIp> 
@@ -498,7 +498,7 @@ describe VCloudClient::Connection do
           <IsEnabled>true</IsEnabled> 
           <Name>mystack-dev-vip</Name> 
           <Interface type=\"application/vnd.vmware.vcloud.orgVdcNetwork+xml\" name=\"External\" href=\"https://testhost.local/api/admin/network/238676ef-b5db-437d-af2b-2f9e6736aebf\" /> 
-          <IpAddress>159.182.33.11</IpAddress> 
+          <IpAddress>192.168.33.11</IpAddress>
           <ServiceProfile> 
             <IsEnabled>true</IsEnabled> 
             <Protocol>HTTP</Protocol> 
@@ -530,7 +530,7 @@ describe VCloudClient::Connection do
           <IsEnabled>true</IsEnabled> 
           <Name>mystack-test-vip</Name> 
           <Interface type=\"application/vnd.vmware.vcloud.orgVdcNetwork+xml\" name=\"External\" href=\"https://testhost.local/api/admin/network/238676ef-b5db-437d-af2b-2f9e6736aebf\" /> 
-          <IpAddress>159.182.33.12</IpAddress> 
+          <IpAddress>192.168.33.12</IpAddress>
           <ServiceProfile> 
             <IsEnabled>true</IsEnabled> 
             <Protocol>HTTP</Protocol> 
