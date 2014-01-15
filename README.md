@@ -11,7 +11,12 @@ See [vCloud API](http://pubs.vmware.com/vcd-51/topic/com.vmware.vcloud.api.doc_5
 
 INSTALLATION
 --
-This plugin is distributed as a Ruby Gem. To install it, run:
+This plugin is distributed as a Ruby Gem but since we have forked the source and made some additions please use bundler to install this Gem by
+adding a line like this to your Gemfile:
+
+    gem "vcloud-rest",      :git => 'git@github.com:pearsoncloud/vcloud-rest.git', :tag => 'v1.2.0' 
+
+Alternativley you man install the original Gem from RubyGems like this:
 
     gem install vcloud-rest
 
@@ -34,6 +39,7 @@ FEATURES
 - basic VM configuration
     - show
     - set cpu/RAM
+    - add VM metadata
     - basic network configuration
     - basic VM Guest Customization configuration
     - start/stop/delete/reset/suspend/reboot
@@ -41,6 +47,8 @@ FEATURES
 - basic vApp NAT port forwarding creation
 - Catalog item upload with byterange upload and retry capabilities
 - show Network details
+- Some initial Edge Gateway configuration functionality:
+    - Update the members of pre-existing Load Balancer Pool
 
 TODO
 --
