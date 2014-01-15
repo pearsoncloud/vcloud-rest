@@ -565,7 +565,7 @@ describe VCloudClient::Connection do
   </Configuration> 
 </EdgeGateway>")
 
-      egw = @connection.get_edgegateway('95d60018-1752-41f3-ba77-11223344556677')
+      egw = @connection.get_edgegateway '95d60018-1752-41f3-ba77-11223344556677', :save => true
       egw[:interfaces].count.must_equal 3
     end
 
@@ -720,20 +720,19 @@ describe VCloudClient::Connection do
 </EdgeGateway>")
 
       new_members = ['10.10.100.1', '10.10.100.2']
-      #new_members = ['10.163.18.7', '10.163.18.8']
 
       stub_request(:post, "https://testuser%40testorg:testpass@testhost.local/api/admin/edgeGateway/95d60018-1752-41f3-ba77-11223344556677/action/configureServices").
           with(:body => "<?xml version=\"1.0\"?>\n<EdgeGatewayServiceConfiguration xmlns=\"http://www.vmware.com/vcloud/v1.5\">\n<FirewallService>\n<IsEnabled>false</IsEnabled>\n</FirewallService>\n<NatService/>\n<LoadBalancerService>\n<IsEnabled>false</IsEnabled>\n<Pool>\n<Name>test_pool_01</Name>\n<ServicePort>\n<IsEnabled>true</IsEnabled>\n<Protocol>HTTP</Protocol>\n<Algorithm>ROUND_ROBIN</Algorithm>\n<Port>8080</Port>\n<HealthCheckPort>8080</HealthCheckPort>\n<HealthCheck>\n<Mode>HTTP</Mode>\n<Uri>/</Uri>\n<HealthThreshold>2</HealthThreshold>\n<UnhealthThreshold>3</UnhealthThreshold>\n<Interval>5</Interval>\n<Timeout>15</Timeout>\n</HealthCheck>\n</ServicePort>\n<ServicePort>\n<IsEnabled>true</IsEnabled>\n<Protocol>HTTPS</Protocol>\n<Algorithm>ROUND_ROBIN</Algorithm>\n<Port>8443</Port>\n<HealthCheckPort>8443</HealthCheckPort>\n<HealthCheck>\n<Mode>SSL</Mode>\n<HealthThreshold>2</HealthThreshold>\n<UnhealthThreshold>3</UnhealthThreshold>\n<Interval>5</Interval>\n<Timeout>15</Timeout>\n</HealthCheck>\n</ServicePort>\n<ServicePort>\n<IsEnabled>false</IsEnabled>\n<Protocol>TCP</Protocol>\n<Algorithm>ROUND_ROBIN</Algorithm>\n<Port/>\n<HealthCheckPort/>\n<HealthCheck>\n<Mode>TCP</Mode>\n<HealthThreshold>2</HealthThreshold>\n<UnhealthThreshold>3</UnhealthThreshold>\n<Interval>5</Interval>\n<Timeout>15</Timeout>\n</HealthCheck>\n</ServicePort>\n<Member>\n<IpAddress>#{new_members[0]}</IpAddress>\n<Weight>1</Weight>\n<ServicePort>\n<Protocol>HTTP</Protocol>\n<Port>8080</Port>\n<HealthCheckPort>8080</HealthCheckPort>\n</ServicePort>\n<ServicePort>\n<Protocol>HTTPS</Protocol>\n<Port>8443</Port>\n<HealthCheckPort>8443</HealthCheckPort>\n</ServicePort>\n<ServicePort>\n<Protocol>TCP</Protocol>\n<Port/>\n<HealthCheckPort/>\n</ServicePort>\n</Member>\n<Member>\n<IpAddress>#{new_members[1]}</IpAddress>\n<Weight>1</Weight>\n<ServicePort>\n<Protocol>HTTP</Protocol>\n<Port>8080</Port>\n<HealthCheckPort>8080</HealthCheckPort>\n</ServicePort>\n<ServicePort>\n<Protocol>HTTPS</Protocol>\n<Port>8443</Port>\n<HealthCheckPort>8443</HealthCheckPort>\n</ServicePort>\n<ServicePort>\n<Protocol>TCP</Protocol>\n<Port/>\n<HealthCheckPort/>\n</ServicePort>\n</Member>\n<Operational>true</Operational>\n</Pool>\n<VirtualServer>\n<IsEnabled>true</IsEnabled>\n<Name>mystack-dev-vip</Name>\n<Interface type=\"application/vnd.vmware.vcloud.orgVdcNetwork+xml\" name=\"External\" href=\"https://testhost.local/api/admin/network/1234567-b5db-437d-af2b-abcedrejg\"/>\n<IpAddress>192.168.1.1</IpAddress>\n<ServiceProfile>\n<IsEnabled>true</IsEnabled>\n<Protocol>HTTP</Protocol>\n<Port>80</Port>\n<Persistence>\n<Method/>\n</Persistence>\n</ServiceProfile>\n<ServiceProfile>\n<IsEnabled>true</IsEnabled>\n<Protocol>HTTPS</Protocol>\n<Port>443</Port>\n<Persistence>\n<Method/>\n</Persistence>\n</ServiceProfile>\n<ServiceProfile>\n<IsEnabled>false</IsEnabled>\n<Protocol>TCP</Protocol>\n<Port/>\n<Persistence>\n<Method/>\n</Persistence>\n</ServiceProfile>\n<Logging>false</Logging>\n<Pool>test_pool_01</Pool>\n</VirtualServer>\n</LoadBalancerService>\n</EdgeGatewayServiceConfiguration>\n",
                :headers => {'Accept'=>'application/*+xml;version=5.1', 'Accept-Encoding'=>'gzip, deflate', 'Content-Length'=>'2908', 'Content-Type'=>'application/vnd.vmware.admin.edgeGatewayServiceConfiguration+xml', 'User-Agent'=>'Ruby'}).to_return(
           :status => 200,
-          :body => "<Task xmlns=\"http://www.vmware.com/vcloud/v1.5\" status=\"running\" startTime=\"2014-01-13T10:58:23.939-06:00\" serviceNamespace=\"com.vmware.vcloud\" operationName=\"networkConfigureEdgeGatewayServices\" operation=\"Updating services EdgeGateway egw1(c705f7e7-1eb9-41ed-844a-e2e49be8d6a0)\" expiryTime=\"2014-04-13T10:58:23.939-05:00\" cancelRequested=\"false\" name=\"task\" id=\"urn:vcloud:task:4dcbc8e0-059f-4655-b567-dcc0e472ffd2\" type=\"application/vnd.vmware.vcloud.task+xml\" href=\"https://testuser%40testorg:testpass@testhost.local/api/task/update-egw-test-task\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.vmware.com/vcloud/v1.5 http://10.163.4.41/api/v1.5/schema/master.xsd\">
-	<Link rel=\"task:cancel\" href=\"https://testuser%40testorg:testpass@testhost.local/api/task/update-egw-test-task/action/cancel\" />
-	<User type=\"application/vnd.vmware.admin.user+xml\" name=\"testuser\" href=\"https://testuser%40testorg:testpass@testhost.local/api/admin/user/cf00e729-719d-40fc-8e4c-d516cd74ea4d\" />
-	<Organization type=\"application/vnd.vmware.vcloud.org+xml\" name=\"testorg\" href=\"https://testuser%40testorg:testpass@testhost.local/api/org/b3c44da0-7d8a-479f-9810-4e39d30fa1dc\" />
-	<Progress>0</Progress>
-	<Details />
-</Task>"
-      )
+          :body => "
+<Task xmlns=\"http://www.vmware.com/vcloud/v1.5\" status=\"running\" startTime=\"2014-01-13T10:58:23.939-06:00\" serviceNamespace=\"com.vmware.vcloud\" operationName=\"networkConfigureEdgeGatewayServices\" operation=\"Updating services EdgeGateway egw1(c705f7e7-1eb9-41ed-844a-e2e49be8d6a0)\" expiryTime=\"2014-04-13T10:58:23.939-05:00\" cancelRequested=\"false\" name=\"task\" id=\"urn:vcloud:task:4dcbc8e0-059f-4655-b567-dcc0e472ffd2\" type=\"application/vnd.vmware.vcloud.task+xml\" href=\"https://testuser%40testorg:testpass@testhost.local/api/task/update-egw-test-task\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.vmware.com/vcloud/v1.5 http://10.163.4.41/api/v1.5/schema/master.xsd\">
+<Link rel=\"task:cancel\" href=\"https://testuser%40testorg:testpass@testhost.local/api/task/update-egw-test-task/action/cancel\" />
+<User type=\"application/vnd.vmware.admin.user+xml\" name=\"testuser\" href=\"https://testuser%40testorg:testpass@testhost.local/api/admin/user/cf00e729-719d-40fc-8e4c-d516cd74ea4d\" />
+<Organization type=\"application/vnd.vmware.vcloud.org+xml\" name=\"testorg\" href=\"https://testuser%40testorg:testpass@testhost.local/api/org/b3c44da0-7d8a-479f-9810-4e39d30fa1dc\" />
+<Progress>0</Progress>
+<Details />
+</Task>")
 
       taskid = @connection.update_virtual_server_pool_members('95d60018-1752-41f3-ba77-11223344556677', 'test_pool_01', new_members)
       taskid.must_equal "update-egw-test-task"

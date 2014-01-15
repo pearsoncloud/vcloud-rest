@@ -41,6 +41,7 @@ module VCloudClient
   class InternalServerError < StandardError; end
   class OVFError < StandardError; end
   class MethodNotAllowed < StandardError; end
+  class UnsupportedOperationError < StandardError; end
   class UnhandledError < StandardError; end
 
   # Main class to access vCloud rest APIs

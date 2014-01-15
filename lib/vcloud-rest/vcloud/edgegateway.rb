@@ -2,7 +2,7 @@ module VCloudClient
   class Connection
     ##
     # Retrieve an Edge Gateway :-)
-    def get_edgegateway(id)
+    def get_edgegateway(id, options = {})
       params = {
           'method' => :get,
           'command' => "/admin/edgeGateway/#{id}"
@@ -44,7 +44,7 @@ module VCloudClient
         :interfaces => interfaces,  :firewall => firewall, :nat => nat,
         :load_balancer => load_balancer }
 
-      # File.open('/tmp/gateway.yml', 'w') { |file| file.write(Psych.dump(gateway, :indentation => 3)) }
+      File.open('/tmp/gateway.yml', 'w') { |file| file.write(Psych.dump(gateway, :indentation => 3)) } if options[:save]
       gateway
     end
 
@@ -63,27 +63,17 @@ module VCloudClient
       raise ArgumentError.new("Did not find Pool '#{pool_name}' on Gateway ID: '#{gateway_id}'") if pool.nil?
 
       # Then make the necessary modifications. In this case simply patch the XML with the IPs of the new servers.
+      number_of_ips = pool.css('Member IpAddress').length
+      number_of_new_members = new_members.length
+      if number_of_new_members > number_of_ips
+        raise UnsupportedOperationError.new("You have provided more new pool member IPs (#{number_of_new_members}) than there are current pool members (#{number_of_ips})")
+      end
+
       pool.css('Member IpAddress').each_with_index do |ip, index|
         ip.content = new_members[index]
       end
 
-      # TODO: Figure out the 'correct' way to extract a <EdgeGatewayServiceConfiguration /> document from the main document
-      #
-      # We cannot simply POST back the <EdgeGatewayServiceConfiguration /> that we extracted from the 'response' with
-      # the required changes because that XML fragment is missing the necessary namespace declaration. We add that here:
-      #
-      post_doc = Nokogiri::XML::Document.parse(response.at('EdgeGatewayServiceConfiguration').to_s)
-      post_doc.root.add_namespace(nil, 'http://www.vmware.com/vcloud/v1.5')
-
-      post_params = {
-          "method" => :post,
-          "command" => "/admin/edgeGateway/#{gateway_id}/action/configureServices"
-      }
-      post_response, post_headers = send_request(post_params, post_doc.to_xml,
-                                                 'application/vnd.vmware.admin.edgeGatewayServiceConfiguration+xml')
-
-      task = post_response.css("Task").first
-      task_id = task["href"].gsub(/.*\/task\//, "")
+      task_id = update_gateway_service_config(gateway_id, response)
       task_id
     end
 
@@ -201,6 +191,27 @@ module VCloudClient
       end
 
       { :enabled? => enabled, :pools => pools, :virtual_servers => vips }
+    end
+
+    def update_gateway_service_config(gateway_id, update_xml)
+      # TODO: Figure out the 'correct' way to extract a <EdgeGatewayServiceConfiguration /> document from the main document
+      #
+      # We cannot simply POST back the <EdgeGatewayServiceConfiguration /> that we extracted from the 'response' with
+      # the required changes because that XML fragment is missing the necessary namespace declaration. We add that here:
+      #
+      post_doc = Nokogiri::XML::Document.parse(update_xml.at('EdgeGatewayServiceConfiguration').to_s)
+      post_doc.root.add_namespace(nil, 'http://www.vmware.com/vcloud/v1.5')
+
+      post_params = {
+          "method" => :post,
+          "command" => "/admin/edgeGateway/#{gateway_id}/action/configureServices"
+      }
+      post_response, post_headers = send_request(post_params, post_doc.to_xml,
+                                                 'application/vnd.vmware.admin.edgeGatewayServiceConfiguration+xml')
+
+      task = post_response.css("Task").first
+      task_id = task["href"].gsub(/.*\/task\//, "")
+      task_id
     end
   end
 end
