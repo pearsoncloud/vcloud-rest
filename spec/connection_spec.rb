@@ -228,6 +228,11 @@ describe VCloudClient::Connection do
                   </Vdc>",
          :headers => {})
 
+      # TODO: Make this test for the correct parsing of an edge gateway query response.
+      stub_request(:get, "https://testuser%40testorg:testpass@testhost.local/api/admin/vdc/test-vdc/edgeGateways").
+          with(:headers => {'Accept'=>'application/*+xml;version=5.1', 'Accept-Encoding'=>'gzip, deflate', 'User-Agent'=>'Ruby'}).
+          to_return(:status => 200, :body => "", :headers => {})
+
       vdc_get = @connection.get_vdc("test-vdc")
       vdc_get[:vapps].first.must_equal ["vapp_1", "vapp_1-url"]
     end

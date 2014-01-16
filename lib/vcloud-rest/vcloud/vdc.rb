@@ -28,8 +28,24 @@ module VCloudClient
       response.css("Network[type='application/vnd.vmware.vcloud.network+xml']").each do |item|
         networks[item['name']] = item['href'].gsub(/.*\/network\//, "")
       end
+
+      #
+      # Also retrieve the VDC's Edge Gateway objects.
+      # It is clearly open to debate whether this should be here or whether it should
+      # be a separate call. Personally, I like it here.
+      #
+      gateways = {}
+      egw_params = {
+          'method' => :get,
+          'command' => "/admin/vdc/#{vdcId}/edgeGateways"
+      }
+      query_response, query_headers = send_request(egw_params)
+      query_response.css('QueryResultRecords EdgeGatewayRecord').each do |gateway_record|
+        gateways[gateway_record['name']] = gateway_record['href'].gsub(/.*\/edgeGateway\//, "")
+      end
+
       { :id => vdcId, :name => name, :description => description,
-        :vapps => vapps, :networks => networks }
+        :vapps => vapps, :networks => networks, :gateways => gateways }
     end
 
     ##

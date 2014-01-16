@@ -80,7 +80,7 @@ module VCloudClient
     def update_firewall_config(gateway_yaml)
       builder = Nokogiri::XML::Builder.new do |xml|
         xml.FirewallService {
-          xml.IsEnabled gateway_yaml[:enabled?].to_s
+          xml.IsEnabled gateway_yaml[:firewall][:enabled?].to_s
           xml.DefaultAction "drop"
           xml.LogDefaultAction "false"
           gateway_yaml[:firewall][:rules].each do |rule|
@@ -91,16 +91,16 @@ module VCloudClient
               xml.Description rule[:name]
               xml.Policy "allow"
               xml.Protocols {
-                xml.Any "true"
-                xml.Icmp "true"
-                xml.Tcp "true"
-                xml.Udp "true"
+                xml.Any "true" if rule[:protocol] == "any"
+                xml.Icmp "true" if rule[:protocol] == "icmp"
+                xml.Tcp "true" if rule[:protocol] == "tcp"
+                xml.Udp "true" if rule[:protocol] == "udp"
               }
               xml.IcmpSubType(rule[:icmp_subtype]) if rule[:icmp_subtype]
               xml.Port "-1" # Please use only DestinationPortRange and SourcePortRange
-              xml.SourcePort "-1"
               xml.DestinationPortRange rule[:destination][:port]
               xml.DestinationIp rule[:destination][:ip]
+              xml.SourcePort "-1" # Please use only DestinationPortRange and SourcePortRange
               xml.SourcePortRange rule[:source][:port]
               xml.SourceIp rule[:source][:ip]
               xml.EnableLogging rule[:logging?].to_s
@@ -108,12 +108,11 @@ module VCloudClient
           end
         }
       end
-
       response, headers = get_edge_gateway_request(gateway_yaml[:id])
       response.css('EdgeGatewayServiceConfiguration FirewallService').each do |node|
         node.replace builder.doc.root.to_xml
       end
-      update_gateway_service_config(gateway_yaml[:id], response.to_xml)
+      update_gateway_service_config(gateway_yaml[:id], response)
     end
 
     private
