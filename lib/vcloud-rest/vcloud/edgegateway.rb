@@ -2,13 +2,9 @@ module VCloudClient
   class Connection
     ##
     # Retrieve an Edge Gateway :-)
-    def get_edgegateway(id, options = {})
-      params = {
-          'method' => :get,
-          'command' => "/admin/edgeGateway/#{id}"
-      }
+    def get_edge_gateway(id, options = {})
 
-      response, headers = send_request(params)
+      response, headers = get_edge_gateway_request(id)
 
       name        = response.css("EdgeGateway").attribute("name")
       name        = name.text unless name.nil?
@@ -77,8 +73,67 @@ module VCloudClient
       task_id
     end
 
+    ##
+    # Update the firewall configuration based on user updates to the YAML
+    # retrieved from a 'get_edge_gateway' call.
+    #
+    def update_firewall_config(gateway_yaml)
+      builder = Nokogiri::XML::Builder.new do |xml|
+        xml.FirewallService {
+          xml.IsEnabled gateway_yaml[:enabled?].to_s
+          xml.DefaultAction "drop"
+          xml.LogDefaultAction "false"
+          gateway_yaml[:firewall][:rules].each do |rule|
+            xml.FirewallRule {
+              xml.Id rule[:id]
+              xml.IsEnabled rule[:enabled?].to_s
+              xml.MatchOnTranslate "false"
+              xml.Description rule[:name]
+              xml.Policy "allow"
+              xml.Protocols {
+                xml.Any "true"
+                xml.Icmp "true"
+                xml.Tcp "true"
+                xml.Udp "true"
+              }
+              xml.IcmpSubType(rule[:icmp_subtype]) if rule[:icmp_subtype]
+              xml.Port "-1" # Please use only DestinationPortRange and SourcePortRange
+              xml.SourcePort "-1"
+              xml.DestinationPortRange rule[:destination][:port]
+              xml.DestinationIp rule[:destination][:ip]
+              xml.SourcePortRange rule[:source][:port]
+              xml.SourceIp rule[:source][:ip]
+              xml.EnableLogging rule[:logging?].to_s
+            }
+          end
+        }
+      end
+
+      response, headers = get_edge_gateway_request(gateway_yaml[:id])
+      response.css('EdgeGatewayServiceConfiguration FirewallService').each do |node|
+        node.replace builder.doc.root.to_xml
+      end
+      update_gateway_service_config(gateway_yaml[:id], response.to_xml)
+    end
+
     private
 
+    def get_edge_gateway_request(id)
+      params = {
+          'method' => :get,
+          'command' => "/admin/edgeGateway/#{id}"
+      }
+
+      return send_request(params)
+    end
+
+    ##
+    # Parse the 'FirewallService' node into a Hash.
+    # NOTES:
+    #   - Protocols is translated into a single property. If it's possible to have multiple protocols this should change
+    #   - For each 'FirewallRule' element we Nokogiri::XML::DocumentFragment.parse. This is due to an XPath/CSS issue in
+    #     finding the correct IsEnabled element (because it's used throughout the rule XML).
+    #
     def get_firewall_service_config(service_xml)
 
       return {} if service_xml.nil?
@@ -88,18 +143,28 @@ module VCloudClient
 
       rules = []
       xml.css('FirewallRule').each do |rule_xml|
+        rule_xml = Nokogiri::XML::DocumentFragment.parse(rule_xml)
         rule = {}
-        rule[:enabled?] = (!rule_xml.css('IsEnabled').nil? && rule_xml.css('IsEnabled').text == "true") ? true : false
+        rule[:enabled?] = (!rule_xml.xpath('./FirewallRule/IsEnabled').nil? && rule_xml.xpath('./FirewallRule/IsEnabled').text == "true") ? true : false
+        rule[:id] = rule_xml.css('Id').text
         rule[:name] = rule_xml.css('Description').text
         rule[:source] = { :ip => rule_xml.css('SourceIp').text, :port => rule_xml.css('SourcePortRange').text }
         rule[:destination] = { :ip => rule_xml.css('DestinationIp').text, :port => rule_xml.css('DestinationPortRange').text }
         rule[:logging?] = (!rule_xml.css('EnableLogging').nil? && rule_xml.css('EnableLogging').text == "true") ? true : false
+
+        rule[:protocol] = "icmp" if rule_xml.at_css('Protocols Icmp')
+        rule[:protocol] = "tcp" if rule_xml.at_css('Protocols Tcp')
+        rule[:protocol] = "udp" if rule_xml.at_css('Protocols Udp')
+        rule[:protocol] = "any" if rule_xml.at_css('Protocols Any')
         rules << rule
       end
 
       { :enabled? => enabled, :rules => rules }
     end
 
+    ##
+    # Parse the 'NatService' node into a Hash.
+    #
     def get_nat_service_config(service_xml)
 
       return {} if service_xml.nil?
@@ -113,9 +178,9 @@ module VCloudClient
         rule = Hash.new {|h,k| h[k] = Array.new }
         rule[:enabled?] = (!rule_xml.xpath('./NatRule/IsEnabled').nil? && rule_xml.xpath('./NatRule/IsEnabled').text == "true") ? true : false
         rule[:type] = rule_xml.css('RuleType').text
-        rule[:protocol] = rule_xml.css('NatRule Protocol').text
-        rule[:original] = { :ip => rule_xml.css('NatRule OriginalIp').text, :port => rule_xml.css('NatRule OriginalPort').text }
-        rule[:translated] = { :ip => rule_xml.css('NatRule TranslatedIp').text, :port => rule_xml.css('NatRule TranslatedPort').text }
+        rule[:protocol] = rule_xml.css('GatewayNatRule Protocol').text
+        rule[:original] = { :ip => rule_xml.css('GatewayNatRule OriginalIp').text, :port => rule_xml.css('GatewayNatRule OriginalPort').text }
+        rule[:translated] = { :ip => rule_xml.css('GatewayNatRule TranslatedIp').text, :port => rule_xml.css('GatewayNatRule TranslatedPort').text }
 
         rule_xml.css("Interface[type='application/vnd.vmware.admin.network+xml']").each { |n|
           rule[:interfaces] << { n['name'] => n['href'].gsub(/.*\/network\//, "") }
@@ -126,6 +191,9 @@ module VCloudClient
       { :enabled? => enabled, :rules => rules }
     end
 
+    ##
+    # Parse the 'LoadBalancerService' node into a Hash.
+    #
     def get_load_balancer_service_config(service_xml)
 
       return {} if service_xml.nil?
