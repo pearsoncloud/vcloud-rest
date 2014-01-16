@@ -98,6 +98,17 @@ Or:
 
 Note: in order to run tests with ruby 1.8.7+ you need to export RUBYOPT="rubygems"
 
+RELEASING
+--
+Since we are 'privately' managing this Gem (i.e: we can't put it on RubyGems) the release
+process, now using Jeweler, is as follows:
+
+    rake version:bump:minor  # or rake version:bump:patch
+    rake gemspec
+    git commit -a -m "Release <NEW_VERSION>" 
+    rake release
+
+
 LICENSE
 --
 
