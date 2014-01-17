@@ -243,22 +243,24 @@ module VCloudClient
             xml['ovf'].Info "Configuration parameters for logical networks"
             xml.NetworkConfig("networkName" => network_config[:name]) {
               xml.Configuration {
-                xml.IpScopes {
-                  xml.IpScope {
-                    xml.IsInherited(network_config[:is_inherited] || "false")
-                    xml.Gateway network_config[:gateway]
-                    xml.Netmask network_config[:netmask]
-                    xml.Dns1 network_config[:dns1] if network_config[:dns1]
-                    xml.Dns2 network_config[:dns2] if network_config[:dns2]
-                    xml.DnsSuffix network_config[:dns_suffix] if network_config[:dns_suffix]
-                    xml.IpRanges {
-                      xml.IpRange {
-                        xml.StartAddress network_config[:start_address]
-                        xml.EndAddress network_config[:end_address]
+                if network_config[:gateway] # We really don't care about having a vApp network so make it optional.
+                  xml.IpScopes {
+                    xml.IpScope {
+                      xml.IsInherited(network_config[:is_inherited] || "false")
+                      xml.Gateway network_config[:gateway]
+                      xml.Netmask network_config[:netmask]
+                      xml.Dns1 network_config[:dns1] if network_config[:dns1]
+                      xml.Dns2 network_config[:dns2] if network_config[:dns2]
+                      xml.DnsSuffix network_config[:dns_suffix] if network_config[:dns_suffix]
+                      xml.IpRanges {
+                        xml.IpRange {
+                          xml.StartAddress network_config[:start_address]
+                          xml.EndAddress network_config[:end_address]
+                        }
                       }
                     }
                   }
-                }
+                end
                 xml.ParentNetwork("href" => "#{@api_url}/network/#{network_config[:parent_network]}")
                 xml.FenceMode network_config[:fence_mode]
 
