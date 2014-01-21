@@ -243,7 +243,10 @@ module VCloudClient
             xml['ovf'].Info "Configuration parameters for logical networks"
             xml.NetworkConfig("networkName" => network_config[:name]) {
               xml.Configuration {
-                if network_config[:gateway] # We really don't care about having a vApp network so make it optional.
+                # We really don't care about having a proper, separate, vApp network  as we generally want to
+                # connect to one of our OrgVDC networks so here we make it optional to full configure one.
+                # Our default is to simply specify a parent network and use that.
+                if network_config[:gateway]
                   xml.IpScopes {
                     xml.IpScope {
                       xml.IsInherited(network_config[:is_inherited] || "false")

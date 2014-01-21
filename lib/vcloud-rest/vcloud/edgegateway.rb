@@ -207,21 +207,27 @@ module VCloudClient
         pool[:name] = rule_xml.css('Name').text
         pool[:description] = rule_xml.css('Description').text
 
-        rule_xml.css("ServicePort").each { |p|
+        rule_xml.xpath('./Pool/ServicePort').each { |p|
           pool[:service_ports] << {
-            :enabled?     => ((!p.css('IsEnabled').nil? && p.css('IsEnabled').text == "true") ? true : false),
+            :enabled?     => ((!p.xpath('./IsEnabled').nil? && p.xpath('./IsEnabled').text == "true") ? true : false),
             :protocol     => p.css('Protocol').text,
             :algorithm    => p.css('Algorithm').text,
             :port         => p.css('Port').text,
             :health_check => {
-                :port => p.css('HealthCheckPort').text,
-                :mode => p.css('Mode').text,
-                :uri  => p.css('Uri').text,
-                :interval => p.css('Interval').text,
-                :timeout  => p.css('Timeout').text,
-                :health_threshold => p.css('HealthThreshold').text,
-                :unhealth_threshold => p.css('UnhealthThreshold').text
+                :port => p.xpath('./HealthCheckPort').text,
+                :mode => p.xpath('./HealthCheck/Mode').text,
+                :uri  => p.xpath('./HealthCheck/Uri').text,
+                :interval => p.xpath('./HealthCheck/Interval').text,
+                :timeout  => p.xpath('./HealthCheck/Timeout').text,
+                :health_threshold => p.xpath('./HealthCheck/HealthThreshold').text,
+                :unhealth_threshold => p.xpath('./HealthCheck/UnhealthThreshold').text
             }
+          }
+        }
+
+        rule_xml.xpath('./Pool/Member').each { |member|
+          pool[:members] << {
+            :ipaddress  => member.css('IpAddress').text
           }
         }
         pools << pool
