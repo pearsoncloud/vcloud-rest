@@ -14,7 +14,7 @@ INSTALLATION
 This plugin is distributed as a Ruby Gem but since we have forked the source and made some additions please use bundler to install this Gem by
 adding a line like this to your Gemfile:
 
-    gem "vcloud-rest",      :git => 'git@github.com:pearsoncloud/vcloud-rest.git', :tag => 'v1.2.0' 
+    gem "vcloud-rest",      :git => 'git@github.com:pearsoncloud/vcloud-rest.git', :tag => 'v1.6.0' 
 
 Alternativley you man install the original Gem from RubyGems like this:
 
@@ -43,6 +43,7 @@ FEATURES
     - basic network configuration
     - basic VM Guest Customization configuration
     - start/stop/delete/reset/suspend/reboot
+    - set VM hostname
 - basic vApp compose capabilities
 - basic vApp NAT port forwarding creation
 - Catalog item upload with byterange upload and retry capabilities

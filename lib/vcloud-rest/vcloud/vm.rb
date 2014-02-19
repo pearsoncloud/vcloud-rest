@@ -462,6 +462,35 @@ module VCloudClient
       result
     end
 
+
+    def set_vm_hostname(vmId, hostname)
+      params = {
+          'method' => :get,
+          'command' => "/vApp/vm-#{vmId}"
+      }
+
+      response, headers = send_request(params)
+
+      response.css('GuestCustomizationSection ComputerName').each do |node|
+        node.content = hostname.to_s
+      end
+
+      customisation = Nokogiri::XML::Document.parse(response.at('GuestCustomizationSection').to_s)
+      customisation.root.add_namespace(nil, 'http://www.vmware.com/vcloud/v1.5')
+      customisation.root.add_namespace('ovf', 'http://schemas.dmtf.org/ovf/envelope/1')
+
+      put_params = {
+          "method" => :put,
+          "command" => "/vApp/vm-#{vmId}/guestCustomizationSection"
+      }
+      put_response, put_headers = send_request(put_params, customisation.to_xml,
+                                                 'application/vnd.vmware.vcloud.guestCustomizationSection+xml')
+
+      task = put_response.css("Task").first
+      task_id = task["href"].gsub(/.*\/task\//, "")
+      task_id
+    end
+
     ##
     # Shutdown a given vm
     def poweroff_vm(vmId)
