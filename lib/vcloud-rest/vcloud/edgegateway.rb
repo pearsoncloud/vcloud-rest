@@ -91,10 +91,10 @@ module VCloudClient
               xml.Description rule[:name]
               xml.Policy "allow"
               xml.Protocols {
-                xml.Any "true" if rule[:protocol] == "any"
-                xml.Icmp "true" if rule[:protocol] == "icmp"
-                xml.Tcp "true" if rule[:protocol] == "tcp"
-                xml.Udp "true" if rule[:protocol] == "udp"
+                xml.Any "true" if rule[:protocols].include?  == "any"
+                xml.Icmp "true" if rule[:protocols].include? == "icmp"
+                xml.Tcp "true" if rule[:protocols].include?  == "tcp"
+                xml.Udp "true" if rule[:protocols].include?  == "udp"
               }
               xml.IcmpSubType(rule[:icmp_subtype]) if rule[:icmp_subtype]
               xml.Port "-1" # Please use only DestinationPortRange and SourcePortRange
@@ -151,10 +151,11 @@ module VCloudClient
         rule[:destination] = { :ip => rule_xml.css('DestinationIp').text, :port => rule_xml.css('DestinationPortRange').text }
         rule[:logging?] = (!rule_xml.css('EnableLogging').nil? && rule_xml.css('EnableLogging').text == "true") ? true : false
 
-        rule[:protocol] = "icmp" if rule_xml.at_css('Protocols Icmp')
-        rule[:protocol] = "tcp" if rule_xml.at_css('Protocols Tcp')
-        rule[:protocol] = "udp" if rule_xml.at_css('Protocols Udp')
-        rule[:protocol] = "any" if rule_xml.at_css('Protocols Any')
+        rule[:protocols] = []
+        rule[:protocols] << "icmp" if rule_xml.at_css('Protocols Icmp')
+        rule[:protocols] << "tcp" if rule_xml.at_css('Protocols Tcp')
+        rule[:protocols] << "udp" if rule_xml.at_css('Protocols Udp')
+        rule[:protocols] << "any" if rule_xml.at_css('Protocols Any')
         rules << rule
       end
 
