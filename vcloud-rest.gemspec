@@ -52,6 +52,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<rake>, [">= 0"])
   s.add_development_dependency(%q<minitest>, [">= 0"])
   s.add_development_dependency(%q<webmock>, [">= 0"])
-  s.add_development_dependency(%q<vcloud-rest>, [">= 0"])
 end
 
