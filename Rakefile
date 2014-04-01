@@ -18,9 +18,9 @@ Jeweler::Tasks.new do |s|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   s.name = %q{vcloud-rest}
   s.authors = ["Stefano Tortarolo", "Gareth Jones"]
-  s.email = ['stefano.tortarolo@gmail.com', 'garethmichaeljones@gmail.com']
+  s.email = ['stefano.tortarolo@gmail.com', 'gareth.jones@pearson.com']
   s.summary = %q{Unofficial ruby bindings for VMWare vCloud's API}
-  s.homepage = %q{https://github.com/astratto/vcloud-rest}
+  s.homepage = %q{https://github.com/pearsoncloud/vcloud-rest}
   s.description = %q{Ruby bindings to create, list and manage vCloud servers}
   s.license     = 'Apache 2.0'
 
