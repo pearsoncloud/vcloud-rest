@@ -419,7 +419,7 @@ module VCloudClient
           "xmlns" => "http://www.vmware.com/vcloud/v1.5",
           "forceCustomization" => "true")
       end
-
+      
       params = {
         "method" => :post,
         "command" => "/vApp/vapp-#{vappId}/action/deploy"
@@ -429,5 +429,38 @@ module VCloudClient
       task_id = headers[:location].gsub(/.*\/task\//, "")
       task_id
     end
+	
+	def set_startup_section(vappId, vm_list={}) 
+  
+      builder = Nokogiri::XML::Builder.new do |xml|
+        xml['ovf'].StartupSection(
+		  "xmlns:vcloud" => "http://www.vmware.com/vcloud/v1.5",
+          "vcloud:type"  => "application/vnd.vmware.vcloud.startupSection+xml",
+          "xmlns"        => "http://www.vmware.com/vcloud/v1.5",
+          "xmlns:ovf"    => "http://schemas.dmtf.org/ovf/envelope/1") {
+          xml['ovf'].Info "VApp startup section"
+          vm_list.each do |vm_name, config|
+		
+            xml['ovf'].Item(
+				"ovf:order" => "#{config[:startup_order]}", 
+				"ovf:startDelay" => "#{config[:boot_delay]}", 
+				"ovf:id" => "#{vm_name}",
+			)
+          end
+        }
+      end
+        
+      params = {
+        "method" => :put,
+        "command" => "/vApp/vapp-#{vappId}/startupSection"
+      }
+
+      response, headers = send_request(params, builder.to_xml, "application/vnd.vmware.vcloud.startupSection+xml")
+      task_id = headers[:location].gsub(/.*\/task\//, "")
+      task_id  
+	end	
   end
+  
+
+  
 end
