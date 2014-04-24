@@ -81,6 +81,9 @@ module VCloudClient
     def get_vm_disk_info(vmid)
       response, headers = __get_disk_info(vmid)
 
+      parentId = get_scsi_parent_id(response)
+      @logger.warn "parentId : #{parentId}."
+      
       disks = []
       response.css("Item").each do |entry|
         # Pick only entries with node "HostResource"
@@ -555,6 +558,9 @@ module VCloudClient
     private
       def add_disk(source_xml, disk_info)
         disks_count = source_xml.css("Item").css("rasd|HostResource").count
+        
+        # get the hard disk controller parent Id, bit crude but better than hard coded as now
+        parentId = get_scsi_parent_id(source_xml)
 
         # FIXME: This is a hack, but dealing with nokogiri APIs can be quite
         # frustrating sometimes...
@@ -574,7 +580,7 @@ module VCloudClient
                   ns12:busSubType=\"lsilogic\"
                   ns12:busType=\"6\"/>
             <rasd:InstanceID>200#{disks_count}</rasd:InstanceID>
-            <rasd:Parent>1</rasd:Parent>
+            <rasd:Parent>#{parentId}</rasd:Parent>
             <rasd:ResourceType>17</rasd:ResourceType>
           </Item>""")
       end
@@ -609,6 +615,21 @@ module VCloudClient
         source_xml.to_xml
       end
 
+      def get_scsi_parent_id(source_xml)
+        instanceId = ""
+        source_xml.css("Item").each do |entry|
+          resourceType = entry.css("rasd|ResourceType").first
+          resourceSubType = entry.css("rasd|ResourceSubType").first
+          
+          # If there is more than 1, might have to filter on resourceSubType too
+          next unless resourceType.text == "6"
+
+          instanceId = entry.css("rasd|InstanceID").first.text
+          break
+        end
+        instanceId
+      end
+      
       def __get_disk_info(vmid)
         params = {
           'method' => :get,
@@ -617,5 +638,6 @@ module VCloudClient
 
         send_request(params)
       end
+      
   end
 end
