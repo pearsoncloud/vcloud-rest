@@ -91,10 +91,10 @@ module VCloudClient
               xml.Description rule[:name]
               xml.Policy "allow"
               xml.Protocols {
-                xml.Any "true" if rule[:protocols].include?  == "any"
-                xml.Icmp "true" if rule[:protocols].include? == "icmp"
-                xml.Tcp "true" if rule[:protocols].include?  == "tcp"
-                xml.Udp "true" if rule[:protocols].include?  == "udp"
+                xml.Any "true" if rule[:protocols].include?("any")
+                xml.Icmp "true" if rule[:protocols].include?("icmp")
+                xml.Tcp "true" if rule[:protocols].include?("tcp")
+                xml.Udp "true" if rule[:protocols].include?("udp")
               }
               xml.IcmpSubType(rule[:icmp_subtype]) if rule[:icmp_subtype]
               xml.Port "-1" # Please use only DestinationPortRange and SourcePortRange
