@@ -9,8 +9,9 @@ Gem::Specification.new do |s|
   s.version = "1.7.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
+  s.require_paths = ["lib"]
   s.authors = ["Stefano Tortarolo", "Gareth Jones"]
-  s.date = "2014-05-02"
+  s.date = "2014-05-09"
   s.description = "Ruby bindings to create, list and manage vCloud servers"
   s.email = ["stefano.tortarolo@gmail.com", "gareth.jones@pearson.com"]
   s.extra_rdoc_files = [
@@ -35,8 +36,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = "https://github.com/pearsoncloud/vcloud-rest"
   s.licenses = ["Apache 2.0"]
-  s.require_paths = ["lib"]
-  s.rubygems_version = "2.1.11"
+  s.rubygems_version = "2.2.2"
   s.summary = "Unofficial ruby bindings for VMWare vCloud's API"
 
   if s.respond_to? :specification_version then
@@ -48,32 +48,6 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<httpclient>, ["~> 2.3.3"])
       s.add_runtime_dependency(%q<ruby-progressbar>, ["~> 1.2.0"])
       s.add_runtime_dependency(%q<awesome_print>, ["~> 1.2.0"])
-      s.add_development_dependency(%q<vcloud-rest>, [">= 0"])
-      s.add_development_dependency(%q<bundler>, ["~> 1.0"])
-      s.add_development_dependency(%q<jeweler>, ["~> 2.0.1"])
-      s.add_development_dependency(%q<rake>, [">= 0"])
-      s.add_development_dependency(%q<minitest>, [">= 0"])
-      s.add_development_dependency(%q<webmock>, [">= 0"])
-      s.add_development_dependency(%q<bundler>, ["~> 1.0"])
-      s.add_development_dependency(%q<jeweler>, ["~> 2.0.1"])
-      s.add_development_dependency(%q<rake>, [">= 0"])
-      s.add_development_dependency(%q<minitest>, [">= 0"])
-      s.add_development_dependency(%q<webmock>, [">= 0"])
-      s.add_development_dependency(%q<bundler>, ["~> 1.0"])
-      s.add_development_dependency(%q<jeweler>, ["~> 2.0.1"])
-      s.add_development_dependency(%q<rake>, [">= 0"])
-      s.add_development_dependency(%q<minitest>, [">= 0"])
-      s.add_development_dependency(%q<webmock>, [">= 0"])
-      s.add_development_dependency(%q<bundler>, ["~> 1.0"])
-      s.add_development_dependency(%q<jeweler>, ["~> 2.0.1"])
-      s.add_development_dependency(%q<rake>, [">= 0"])
-      s.add_development_dependency(%q<minitest>, [">= 0"])
-      s.add_development_dependency(%q<webmock>, [">= 0"])
-      s.add_development_dependency(%q<bundler>, ["~> 1.0"])
-      s.add_development_dependency(%q<jeweler>, ["~> 2.0.1"])
-      s.add_development_dependency(%q<rake>, [">= 0"])
-      s.add_development_dependency(%q<minitest>, [">= 0"])
-      s.add_development_dependency(%q<webmock>, [">= 0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 2.0.1"])
       s.add_development_dependency(%q<rake>, [">= 0"])
@@ -85,32 +59,6 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<httpclient>, ["~> 2.3.3"])
       s.add_dependency(%q<ruby-progressbar>, ["~> 1.2.0"])
       s.add_dependency(%q<awesome_print>, ["~> 1.2.0"])
-      s.add_dependency(%q<vcloud-rest>, [">= 0"])
-      s.add_dependency(%q<bundler>, ["~> 1.0"])
-      s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
-      s.add_dependency(%q<rake>, [">= 0"])
-      s.add_dependency(%q<minitest>, [">= 0"])
-      s.add_dependency(%q<webmock>, [">= 0"])
-      s.add_dependency(%q<bundler>, ["~> 1.0"])
-      s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
-      s.add_dependency(%q<rake>, [">= 0"])
-      s.add_dependency(%q<minitest>, [">= 0"])
-      s.add_dependency(%q<webmock>, [">= 0"])
-      s.add_dependency(%q<bundler>, ["~> 1.0"])
-      s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
-      s.add_dependency(%q<rake>, [">= 0"])
-      s.add_dependency(%q<minitest>, [">= 0"])
-      s.add_dependency(%q<webmock>, [">= 0"])
-      s.add_dependency(%q<bundler>, ["~> 1.0"])
-      s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
-      s.add_dependency(%q<rake>, [">= 0"])
-      s.add_dependency(%q<minitest>, [">= 0"])
-      s.add_dependency(%q<webmock>, [">= 0"])
-      s.add_dependency(%q<bundler>, ["~> 1.0"])
-      s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
-      s.add_dependency(%q<rake>, [">= 0"])
-      s.add_dependency(%q<minitest>, [">= 0"])
-      s.add_dependency(%q<webmock>, [">= 0"])
       s.add_dependency(%q<bundler>, ["~> 1.0"])
       s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
       s.add_dependency(%q<rake>, [">= 0"])
@@ -123,32 +71,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<httpclient>, ["~> 2.3.3"])
     s.add_dependency(%q<ruby-progressbar>, ["~> 1.2.0"])
     s.add_dependency(%q<awesome_print>, ["~> 1.2.0"])
-    s.add_dependency(%q<vcloud-rest>, [">= 0"])
-    s.add_dependency(%q<bundler>, ["~> 1.0"])
-    s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
-    s.add_dependency(%q<rake>, [">= 0"])
-    s.add_dependency(%q<minitest>, [">= 0"])
-    s.add_dependency(%q<webmock>, [">= 0"])
-    s.add_dependency(%q<bundler>, ["~> 1.0"])
-    s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
-    s.add_dependency(%q<rake>, [">= 0"])
-    s.add_dependency(%q<minitest>, [">= 0"])
-    s.add_dependency(%q<webmock>, [">= 0"])
-    s.add_dependency(%q<bundler>, ["~> 1.0"])
-    s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
-    s.add_dependency(%q<rake>, [">= 0"])
-    s.add_dependency(%q<minitest>, [">= 0"])
-    s.add_dependency(%q<webmock>, [">= 0"])
-    s.add_dependency(%q<bundler>, ["~> 1.0"])
-    s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
-    s.add_dependency(%q<rake>, [">= 0"])
-    s.add_dependency(%q<minitest>, [">= 0"])
-    s.add_dependency(%q<webmock>, [">= 0"])
-    s.add_dependency(%q<bundler>, ["~> 1.0"])
-    s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
-    s.add_dependency(%q<rake>, [">= 0"])
-    s.add_dependency(%q<minitest>, [">= 0"])
-    s.add_dependency(%q<webmock>, [">= 0"])
     s.add_dependency(%q<bundler>, ["~> 1.0"])
     s.add_dependency(%q<jeweler>, ["~> 2.0.1"])
     s.add_dependency(%q<rake>, [">= 0"])
