@@ -108,6 +108,16 @@ module VCloudClient
       { :status => status, :start_time => start_time, :end_time => end_time, :response => response }
     end
 
+    def IsComplete(task_status)
+      case task_status
+	when 'success','error','canceled','unknown','aborted'
+	  complete = true
+	else
+	  complete = false
+	end
+	  complete
+    end
+	
     ##
     # Poll a given task until completion
     def wait_task_completion(taskid)
@@ -115,12 +125,12 @@ module VCloudClient
       task = {}
 
       loop do
-        task = get_task(taskid)
-        break if task[:status] != 'running'
         sleep 1
+        task = get_task(taskid)
+        break if IsComplete(task[:status])
       end
 
-      if task[:status] == 'error'
+      if task[:status] != 'success'
         errormsg = task[:response].css("Error").first
         errormsg = "Error code #{errormsg['majorErrorCode']} - #{errormsg['message']}"
       end
